@@ -1,1 +1,8 @@
-console.log("Hello I'm Smit")
+import connnectDB from "./db/server.js";
+import dotenv from "dotenv";
+
+dotenv.config({
+    path:"./env"
+})
+
+connnectDB();
