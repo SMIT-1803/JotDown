@@ -1,5 +1,4 @@
 import { User } from "../models/user.model.js";
-import { ApiError } from "../utiils/ApiError.js";
 import { ApiResponse } from "../utiils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
@@ -28,19 +27,20 @@ return response
 
 */
   // Getting user data
+  console.log(req.body)
   const { username, email, fullName, password } = req.body;
 
   // Validation
   {
     [username, email, fullName, password].map((item) => {
       if (item == "") {
-        throw new ApiError(400, "One of the input fields are empty!!");
+        throw new Error("One of the input fields are empty!!");
       }
     });
   }
 
-  if (!email.includes("@") || !email !== email.toLowerCase()) {
-    throw new ApiError(400, "Please enter a valid email");
+  if (!email.includes("@") || email !== email.toLowerCase()) {
+    throw new Error("Please enter a valid email");
   }
 
   // Check if user exists
@@ -51,7 +51,7 @@ return response
     });
 
     if (userExist) {
-      throw new ApiError(400, "User already exists, please login");
+      throw new Error("User already exists, please login");
     }
 
     const user = await User.create({
@@ -64,14 +64,14 @@ return response
       "-password -refreshToken"
     );
     if (!createdUser) {
-      throw new ApiError(500, "User not created and registered");
+      throw new Error("User not created and registered");
     }
 
     return res
       .status(201)
       .json(new ApiResponse(200, createdUser, "User registered successfully"));
   } catch (error) {
-    throw new ApiError(400, "Something went wrong while registering user.");
+    throw new Error("Something went wrong while registering user.");
   }
 }
 
