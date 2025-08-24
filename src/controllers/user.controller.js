@@ -4,7 +4,10 @@ import jwt from "jsonwebtoken";
 
 async function generateAccessAndRefreshTokens(userId) {
   try {
-    const user = await User.findById(user._id);
+    const user = await User.findById(userId._id);
+    if(!user){
+      throw new Error("User not found to generate tokens")
+    }
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
@@ -12,7 +15,10 @@ async function generateAccessAndRefreshTokens(userId) {
     user.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
-  } catch (error) {}
+  } catch (error) {
+    console.log(error.message)
+    throw new Error("Something went wrong while generating tokens: ",error)
+  }
 }
 
 async function registerUser(req, res) {
@@ -80,26 +86,26 @@ async function loginUser(req, res) {
   {
     [email, password].map((item) => {
       if (item == "") {
-        throw new ApiError(400, "One of the input fields are empty!!");
+        throw new Error("One of the input fields are empty!!");
       }
     });
   }
 
   if (!email.includes("@") || email !== email.toLowerCase()) {
-    throw new ApiError(400, "Please enter a valid email");
+    throw new Error("Please enter a valid email");
   }
 
   try {
     const user = await User.findOne({
       $or: [{ email }],
     });
-    if (!userExist) {
-      throw new ApiError(400, "User not found. Please register");
+    if (!user) {
+      throw new Error("User not found. Please register");
     }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
-      throw new ApiError(401, "Invalid user credentials");
+      throw new Error("Invalid user credentials");
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
@@ -131,7 +137,7 @@ async function loginUser(req, res) {
         )
       );
   } catch (error) {
-    throw new ApiError(400, "Something went wrong while logging user in.");
+    throw new Error("Something went wrong while logging user in.");
   }
 }
 
