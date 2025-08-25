@@ -4,20 +4,20 @@ import jwt from "jsonwebtoken";
 
 async function generateAccessAndRefreshTokens(userId) {
   try {
-    const user = await User.findById(userId._id);
-    if(!user){
-      throw new Error("User not found to generate tokens")
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found to generate tokens");
     }
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
-    user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
   } catch (error) {
-    console.log(error.message)
-    throw new Error("Something went wrong while generating tokens: ",error)
+    console.log(error.message);
+    throw new Error("Something went wrong while generating tokens: ", error);
   }
 }
 
@@ -33,7 +33,7 @@ return response
 
 */
   // Getting user data
-  console.log(req.body)
+  console.log(req.body);
   const { username, email, fullName, password } = req.body;
 
   // Validation
@@ -77,6 +77,7 @@ return response
       .status(201)
       .json(new ApiResponse(200, createdUser, "User registered successfully"));
   } catch (error) {
+    console.log(error.message);
     throw new Error("Something went wrong while registering user.");
   }
 }
@@ -141,4 +142,31 @@ async function loginUser(req, res) {
   }
 }
 
-export { registerUser, loginUser };
+async function logoutUser(req, res) {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(
+      new ApiResponse(200, { name: req.user.fullName }, "User logged Out!!")
+    );
+}
+
+export { registerUser, loginUser, logoutUser };
