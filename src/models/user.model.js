@@ -26,6 +26,12 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+    notes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Notes",
+      },
+    ],
   },
   { timestamps: true }
 );

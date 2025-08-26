@@ -12,7 +12,7 @@ const notesSchema = new Schema(
     },
     content: {
       type: String,
-      required: trusted,
+      required: true,
     },
     isDeleted: {
       type: Boolean,
