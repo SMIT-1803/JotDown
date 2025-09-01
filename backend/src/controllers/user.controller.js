@@ -216,4 +216,18 @@ async function refreshAccessToken(req, res) {
     );
 }
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+async function getCurrentUser(req,res){
+  try {
+    const user = req.user
+    if(!user){
+      throw new Error(401,"Could not get the user.")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,user,"User got successfully"))
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser };
