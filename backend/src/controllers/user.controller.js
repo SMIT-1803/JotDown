@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-import { ApiResponse } from "../utiils/ApiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
 async function generateAccessAndRefreshTokens(userId) {
@@ -197,6 +197,7 @@ async function refreshAccessToken(req, res) {
   const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(
     user._id
   );
+
   options = {
     httpOnly: true,
     secure: true,
@@ -209,7 +210,7 @@ async function refreshAccessToken(req, res) {
     .json(
       new ApiResponse(
         200,
-        { accessToken, registerUser: newRefreshToken },
+        { accessToken, refreshToken: newRefreshToken },
         "Access token refreshed"
       )
     );

@@ -1,6 +1,6 @@
 import { Notes } from "../models/notes.model.js";
 import { User } from "../models/user.model.js";
-import { ApiResponse } from "../utiils/ApiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 /*
 Controller required:
 Creating a notes: Taking user_id, title, content, isDeleted and creating a note in database
