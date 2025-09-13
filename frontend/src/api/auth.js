@@ -26,7 +26,7 @@ export async function login({ email, password }) {
 export async function me() {
   const res = await api.get("/users/me");
   const payload = res.data?.data;
-  return payload;
+  return payload.user;
 }
 
 export async function logout() {
